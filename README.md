@@ -15,7 +15,7 @@ Main results:
 - γ(m) = e^(-λ(m)) ρ(m), where λ(m) is the Lyapunov exponent of the minors (computed up to n = 1000) and ρ(m) is an arithmetic-resonance factor that grows from ≈ 1 at m = 2 to ≈ 1.39 at m = 10 (1.29 to 1.39 depending on the form of the fit). The collision bound proves ρ(m) ≥ 1 whenever λ(m) and γ(m) exist; the existence of γ(m) is left as a conjecture.
 - A replication with a decision rule fixed before its data rejects the gcd of consecutive minors as the source of ρ(m): where ρ is largest (m = 10), consecutive minors are coprime as often as random integers (to within 0.0004 at 95% confidence), and the gcd effect does not grow with n. The origin of ρ(m) remains open.
 - The free model goes back to structural singularity, driven by zero subdiagonal entries, so the dense upper triangle is what drives the phenomenon.
-- The condition number grows with m. It is offered as a baseline for the Hessenberg matrices of Krylov methods and open quantum systems, not as a model of them.
+- The condition number grows with m at fixed n. It is a baseline for the conditioning of the upper-Hessenberg shape class, not a model of the Hessenberg matrices produced by Krylov methods.
 
 ## Structure
 
