@@ -1,6 +1,6 @@
 """
-paper_experiments.py
-====================
+monte_carlo.py
+==============
 Monte Carlo estimators for the singularity of Bohemian upper-Hessenberg
 matrices (normalized and free models) and the empirical distribution of the
 condition number kappa = s_max / s_min.

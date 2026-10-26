@@ -4,7 +4,7 @@ gcd_resonance.py
 Does the gcd of consecutive minors explain the resonance factor rho(m)?
 A test with a pre-registered decision rule for the normalized Bohemian upper-Hessenberg family.
 
-The paper's hypothesis H_gcd: rho(m) is quantified by how the law of
+The hypothesis H_gcd: rho(m) is quantified by how the law of
 gcd(d_{n-2}, d_{n-1}) deviates from that of random integers. It makes two predictions:
 
   1. LAW. Where rho is largest (m = 10), consecutive minors share common factors more

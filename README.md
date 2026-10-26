@@ -21,10 +21,10 @@ Main results:
 |---|---|
 | `Bohemian_Hessenberg.ipynb` | Walks through every computation of the project, in the order of the poster, with the outputs saved. |
 | `bohemian/bohemian_analysis.py` | Generators for both models, the continuant recurrence, Bareiss determinant, exact rank, classification of singular matrices, exhaustive enumeration and the exact terms of the collision lower bound. |
-| `bohemian/paper_experiments.py` | Monte Carlo singularity estimators for both models and the condition number. |
+| `bohemian/monte_carlo.py` | Monte Carlo singularity estimators for both models and the condition number. |
 | `bohemian/gamma_estimation.py` | Rao-Blackwell estimator, the fit of γ(m) with bootstrap intervals, and the Lyapunov exponent. |
 | `bohemian/gcd_resonance.py` | The gcd test, with its fixed decision rule: the gcd split of consecutive minors, the growth of the gcd effect between two fixed dimensions, and the decision rule. |
 | `bohemian/bohemian_eigenvalues.py` | Eigenvalue density of Bohemian families, accumulated into a 2D histogram (Figure 1 of the poster). |
 | `Hessenberg_Poster.pdf` | The poster. |
 
-The notebook runs in about 13 minutes with `FULL = False`; `FULL = True` uses the poster's 10^8 samples for the eigenvalue density. Requirements are in `requirements.txt` (Python 3.12).
+The notebook runs in about 10 to 15 minutes with `FULL = False`; `FULL = True` uses the poster's 10^8 samples for the eigenvalue density. Requirements are in `requirements.txt` (Python 3.12).

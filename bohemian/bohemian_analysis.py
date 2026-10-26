@@ -16,7 +16,7 @@ Contents
 * Bareiss integer elimination (independent exact determinant) and an exact
   rank over Q, used for cross-checks and for the corank of singular matrices.
 * Classification of why a singular matrix is singular (structural vs genuine).
-* Exhaustive enumeration with exact rational probabilities (Table I).
+* Exhaustive enumeration with exact rational probabilities.
 * Exact terms of the collision lower bound (Theorem 4).
 """
 import itertools
