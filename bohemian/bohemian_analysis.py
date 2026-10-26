@@ -18,8 +18,10 @@ Contents
 * Classification of why a singular matrix is singular (structural vs genuine).
 * Exhaustive enumeration with exact rational probabilities.
 * Exact terms of the collision lower bound (Theorem 4).
+* Exact second moments of the minors and the bounds of Theorems 5 and 6.
 """
 import itertools
+import math
 from fractions import Fraction
 from math import prod
 
@@ -199,3 +201,44 @@ def collision_lower_bound(n, m):
         count += 1
     explicit = 1 / (m * ((m - 1) * ((m + 1) / 2) ** (n - 2) + 1))
     return p, coll / count / m, bound / count / m, explicit
+
+# ---------------------------------------------------------------------------
+# Second moments of the minors and the bounds that follow (Theorems 5 and 6)
+# ---------------------------------------------------------------------------
+def second_moments(n, m):
+    """Exact E[d_k^2], k = 0..n, for the normalized model.
+    With e_k = (-1)^k d_k one has e_k = -sum_{i<k} h_{i+1,k} e_i, a sign-free recurrence with
+    a fresh column at every step. For Q_k = sum_{j<k} e_j^2 and S_k = sum_{j<k} e_j, the pair
+    (E Q_k, E S_k^2) is multiplied at each step by [[1+s2, mu^2], [s2, (1-mu)^2]], where mu and
+    s2 are the mean and variance of an entry, and E e_k^2 = s2 E Q_k + mu^2 E S_k^2."""
+    mu, s2 = Fraction(m - 1, 2), Fraction(m * m - 1, 12)
+    q, s_sq = Fraction(1), Fraction(1)               # E Q_1 = E S_1^2 = 1 (only e_0 = 1)
+    out = [Fraction(1)]
+    for _ in range(n):
+        out.append(s2 * q + mu * mu * s_sq)
+        q, s_sq = (1 + s2) * q + mu * mu * s_sq, s2 * q + (1 - mu) ** 2 * s_sq
+    return out
+
+
+def rho2(m):
+    """Perron root of the 2x2 second-moment matrix: E d_k^2 grows like rho2^k."""
+    mu, s2 = (m - 1) / 2, (m * m - 1) / 12
+    t, d = 1 + s2 + (1 - mu) ** 2, (1 + s2) * (1 - mu) ** 2 - mu * mu * s2
+    return (t + math.sqrt(t * t - 4 * d)) / 2
+
+
+def moment_lower_bound(n, m):
+    """Lower bound on P(d_n = 0) for every n: 1/(m((m-1) sum_{k<=n-2} b_k + 1)), with
+    b_k = min(sqrt(E d_k^2), mu sum_{j<k} b_j) an upper bound on E|d_k| (Theorem 5)."""
+    mu = (m - 1) / 2
+    e2 = second_moments(n, m)
+    b = [1.0]
+    for k in range(1, n - 1):
+        b.append(min(math.sqrt(e2[k]), mu * sum(b)))
+    return 1 / (m * ((m - 1) * sum(b[: n - 1]) + 1))
+
+
+def decay_upper_bound(n):
+    """Upper bound on P(d_n = 0), uniform in m (Theorem 6): it tends to 0 like n^{-1/2}."""
+    return (math.sqrt(24 / (math.pi * (n - 1))) + math.exp(-(n - 1) / 16)
+            + math.exp(-(n - 1) / 48))
