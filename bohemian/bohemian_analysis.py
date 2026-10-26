@@ -17,6 +17,7 @@ Contents
   rank over Q, used for cross-checks and for the corank of singular matrices.
 * Classification of why a singular matrix is singular (structural vs genuine).
 * Exhaustive enumeration with exact rational probabilities (Table I).
+* Exact terms of the collision lower bound (Theorem 4).
 """
 import itertools
 from fractions import Fraction
@@ -166,3 +167,35 @@ def exact_singular_probability(n, m, normalized=True):
         singular += sum(mult for d, mult in states.items() if d[-1] == 0)
     total = m ** (n * (n + 1) // 2) * len(sub_choices)
     return Fraction(singular, total)
+
+# ---------------------------------------------------------------------------
+# Collision lower bound (Theorem 4)
+# ---------------------------------------------------------------------------
+def collision_lower_bound(n, m):
+    """Exact terms of the collision lower bound for the normalized model, n >= 2:
+        p_n >= (1/m) Coll_n >= (1/m) E[1/((m-1) Y_n + 1)] >= 1/(m((m-1)((m+1)/2)^(n-2) + 1)),
+    with Y_n = |d_0| + ... + |d_{n-2}| and Coll_n = P(d_n = 0 | h_nn = 1), the probability
+    that two independent copies of <c, y> coincide (y = signed d_0..d_{n-2}, c uniform).
+    Every matrix of the family is enumerated, so all four values are exact Fractions
+    (the last one is a float). Returns (p_n, Coll_n / m, collision bound, explicit bound)."""
+    p = exact_singular_probability(n, m)
+    coll, bound, count = Fraction(0), Fraction(0), 0
+    # y depends only on columns 1..n-2; enumerate those and get the law of <c, y> exactly
+    for flat in itertools.product(range(m), repeat=(n - 2) * (n - 1) // 2):
+        d, pos = [1], 0
+        for k in range(1, n - 1):
+            col = flat[pos:pos + k]
+            pos += k
+            d.append(sum((-1) ** (k - j) * col[j - 1] * d[j - 1] for j in range(1, k + 1)))
+        law = {0: 1}
+        for yj in d:                     # signs do not change the collision probability
+            new = {}
+            for s, w in law.items():
+                for c in range(m):
+                    new[s + c * yj] = new.get(s + c * yj, 0) + w
+            law = new
+        coll += Fraction(sum(w * w for w in law.values()), m ** (2 * (n - 1)))
+        bound += Fraction(1, (m - 1) * sum(abs(v) for v in d) + 1)
+        count += 1
+    explicit = 1 / (m * ((m - 1) * ((m + 1) / 2) ** (n - 2) + 1))
+    return p, coll / count / m, bound / count / m, explicit

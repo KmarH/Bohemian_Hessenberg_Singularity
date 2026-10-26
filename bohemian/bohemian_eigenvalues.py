@@ -148,14 +148,23 @@ def bohemian_exhaustive(n, alphabet, bins=1400, structure="general",
 
 # ---------------------------------------------------------------- rendering
 def render(Hist, extent, fname, cmap="turbo", gamma=0.33, bg="black",
-           mode="power", vmax_pct=99.9, dpi=170, size=8):
+           mode="power", vmax_pct=99.9, dpi=170, size=8, interpolation="nearest",
+           ylim=None, title=None):
     """
     Render the density. mode='power' (PowerNorm, good default) or 'log'.
     Try cmap='turbo'/'jet'/'nipy_spectral' (colorful) or bohemian_green.
-    Smaller gamma (0.25-0.4) brings up faint structure.
+    Smaller gamma (0.25-0.4) brings up faint structure; a lower vmax_pct
+    saturates the bulk.
+    With ylim (or title) set, the plot keeps its axes (Re, Im), is cropped to
+    |Im| <= ylim and sits on a white figure; otherwise it is a bare image.
     With fname=None the figure is returned instead of saved (for notebooks).
     """
-    fig, ax = plt.subplots(figsize=(size, size), facecolor=bg)
+    framed = ylim is not None or title is not None
+    if framed:
+        height = size * (ylim if ylim is not None else extent) / extent * 0.5 + 1.2
+        fig, ax = plt.subplots(figsize=(size, height), facecolor="white")
+    else:
+        fig, ax = plt.subplots(figsize=(size, size), facecolor=bg)
     ax.set_facecolor(bg)
     data = Hist
     if mode == "power":
@@ -166,13 +175,24 @@ def render(Hist, extent, fname, cmap="turbo", gamma=0.33, bg="black",
         shown = np.where(data > 0, data, np.nan)
         norm = LogNorm(vmin=1, vmax=np.nanpercentile(shown, vmax_pct))
     ax.imshow(shown, origin="lower", extent=[-extent, extent, -extent, extent],
-              cmap=cmap, norm=norm, interpolation="nearest")
+              cmap=cmap, norm=norm, interpolation=interpolation)
     ax.set_aspect("equal")
-    ax.axis("off")
-    plt.tight_layout(pad=0)
+    if framed:
+        if ylim is not None:
+            ax.set_ylim(-ylim, ylim)
+        ax.set_xlabel("Re")
+        ax.set_ylabel("Im")
+        ax.grid(False)
+        if title is not None:
+            ax.set_title(title)
+        plt.tight_layout()
+    else:
+        ax.axis("off")
+        plt.tight_layout(pad=0)
     if fname is None:
         return fig
-    plt.savefig(fname, dpi=dpi, facecolor=bg, bbox_inches="tight", pad_inches=0.03)
+    plt.savefig(fname, dpi=dpi, facecolor=fig.get_facecolor(), bbox_inches="tight",
+                pad_inches=0.03)
     plt.close()
     return None
 
